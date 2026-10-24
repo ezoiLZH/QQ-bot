@@ -1,0 +1,43 @@
+# --- 大文件（不纳入版本控制）---
+models/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- 运行时数据 / 日志 ---
+data/*
+!data/.gitkeep
+# 记忆总结 prompt 模板是运行必需资源，必须纳入版本控制
+!data/_summary_prompt_template.txt
+# LLBot 运行时敏感数据 / 日志（含 token、账号信息）
+LLBot-Desktop-win-x64/bin/llbot/data/database/
+LLBot-Desktop-win-x64/bin/llbot/data/auth_token.txt
+LLBot-Desktop-win-x64/bin/llbot/data/webui_token.txt
+LLBot-Desktop-win-x64/bin/llbot/data/email_config.json
+LLBot-Desktop-win-x64/bin/llbot/data/machine_guid.bin
+LLBot-Desktop-win-x64/bin/llbot/data/temp/
+LLBot-Desktop-win-x64/bin/llbot/data/logs/
+LLBot-Desktop-win-x64/logs/
+sessions/*
+!sessions/.gitkeep
+# 空 session 模板是运行必需资源，必须纳入版本控制
+# （仅通用模板和记忆总结模板；各 bot 的模板由启动时复制生成）
+!sessions/00000000-0000-4000-b000-000000000001.jsonl.empty.v2
+!sessions/00000000-0000-4000-a000-000000000001.jsonl.empty.v2
+stickers/*
+!stickers/.gitkeep
+
+# --- bilibili-mcp 运行时凭证 / 登录二维码 ---
+tools/bilibili-mcp/bili_credential.json*
+bilibili_login_qr.png
+
+# --- 临时 / 本地文件 ---
+~$*
+*.tmp
+*.bak
+.claude/settings.local.json
+.env

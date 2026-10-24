@@ -1,0 +1,24 @@
+# 多 Bot 注册配置
+# 每个 QQ 号一个 bot，ws 连接信息对应 LLOneBot/NapCat 的 WebSocket 服务
+# 按照下面的实例填写
+
+bots:
+  1001000100:           # 改成你的QQ号
+    name: Anonther      # 改成你的昵称（bot名字）
+    persona: Anonther   # 改成你的人设文件
+    admins: [你的QQ号]   # 填管理员QQ号
+    ws:
+      url: ws://127.0.0.1:3001  # 和你LLBot配置的端口保持一致
+      access_token: ""  # 可选：和你LLBot配置的token保持一致
+    claude:
+      model: deepseek-flash[1M]
+
+  # 2001000100:           # 注册新bot直接在下面添加
+  #   name: Tomoring      
+  #   persona: Tomoring   
+  #   admins: [你的QQ号]   
+  #   ws:
+  #     url: ws://127.0.0.1:3001  
+  #     access_token: ""  
+  #   claude:
+  #     model: deepseek-flash[1M]

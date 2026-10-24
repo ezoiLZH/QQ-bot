@@ -1,0 +1,4 @@
+# 本地视觉模型依赖（仅 vision.native_in_chat: false 时需要）
+-r requirements.txt
+torch>=2.0
+transformers>=4.45

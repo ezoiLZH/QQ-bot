@@ -1,0 +1,95 @@
+# Bot 全局可调参数 —— 修改后 /reload 热重载即可生效
+# ============================================================
+# Bot 注册（名称、人设、连接信息、模型）请编辑 bots.yaml
+
+# --- WebSocket 连接（回退：只有 bots.yaml 不存在且 config.yaml 无 bots 段时才生效）---
+ws:
+  url: "ws://127.0.0.1:3001"
+  access_token: ""
+
+# --- Claude Code CLI ---
+# AI 推理由 Claude Code 代理（底模 DeepSeek，通过 Claude Code 配置）
+# bot.py 只做 QQ ↔ Claude Code CLI 消息转发
+claude:
+  max_turns: 12         # Claude Code 最大内部推理/tool-calling 轮数
+  timeout: 180          # 单次 CLI 调用超时（秒）
+  base_url: "https://api.deepseek.com/anthropic"  # DeepSeek Anthropic 兼容接口
+  model: "deepseek-flash[1M]"        # Claude Code --model 参数，直接传 DeepSeek 模型名
+  memory_model: "deepseek-flash[1M]"  # 记忆总结专用模型（现统一使用 deepseek-flash）
+  memory_timeout: 300     # 记忆总结超时（秒）
+  api_key: ""           # 可选：独立 API key 用于统计 bot 费用（空=共享交互界面的 key）
+
+# --- 本地视觉模型 (Qwen2-VL) ---
+vision:
+  enabled: true          # 本地 Qwen2-VL（仅在 native_in_chat: false 时使用）
+  force_cpu: false       # 强制 CPU 推理（无 CUDA 时自动回退）
+  model_id: "./models/Qwen2-VL-2B-Instruct"
+  max_area: 1048576  # 1024*1024（普通图片），超过则等比缩小
+  temperature: 0.2   # 越小越确定，推荐 0.1~0.3
+  max_frames: 3      # API 识图时动图（GIF/WebP）最多抽取的帧数
+  native_in_chat: true       # 图片直接以原生多模态进主对话（不再转文字描述）
+  adaptive_resolution: true  # 按图片信息量自动选择分辨率
+  resolution_simple: 512     # 简单图（扁平梗图/表情）长边上限
+  resolution_normal: 768     # 普通图（照片/插画）长边上限
+  resolution_dense: 1024     # 密集图（文字截图等）长边上限
+  image_cleanup_grace: 600   # compact 清理图片时的保护期（秒），避免误删刚收到的图
+
+# --- 表情包 ---
+stickers:
+  max_area: 262144  # 512*512（表情包），超过则等比缩小
+
+# --- 聊天记录 ---
+chat:
+  max_context_chars: 300  # 每条消息截断到多少字
+  max_reply_length: 800   # bot 回复最大长度
+  max_segments: 5           # 分段发送最多段数，超出则随机合并相邻文字段
+  reply_cooldown: 5       # 基础冷却（秒）
+  segment_delay_base: 2.0       # 分段基础间隔（秒），表情包固定此值
+  segment_delay_per_char: 0.1   # 超过阈值后每字追加秒数
+  segment_delay_char_threshold: 10  # 字数阈值（<=此值用 base，超过每字加 per_char）
+
+  session_soft_limit: 150   # 空闲超 5 分钟且超过此条数 → compact
+  session_hard_limit: 200   # 无论是否活跃，超过此条数 → compact
+  session_idle_seconds: 300 # 上次回复后多少秒判定为空闲 (5min)
+  session_compact_to: 45    # compact 后保留最近条数
+  session_overlap: 5        # compact 时切除与保留的重叠缓冲条数
+  log_max_entries: 300      # 磁盘最多保留条数
+
+  skip_cooldown_reply: 10      # 刚回复后冷却（秒）
+  skip_cooldown_1: 10         # 连续 1 次 SKIP 冷却（秒）
+  skip_cooldown_2: 15         # 连续 2 次 SKIP 冷却（秒）
+  skip_cooldown_3: 30         # 连续 3 次 SKIP 冷却（秒）
+  skip_cooldown_5: 60         # 连续 5+ 次 SKIP 冷却（秒）
+  leave_cooldown: 300         # [LEAVE] 暂时离开时长（秒），期间不看群聊
+  memory_max_entries: 20      # 长期记忆最多保留条数
+  memory_min_compact: 0      # compact 至少移除这么多条才触发记忆总结
+
+# --- 触发频率分层因数 ---
+# 高频触发时在 SKIP 冷却基础上乘以倍率，防止刷屏
+rate_limit:
+  tier1_count: 3          # 1分钟内 ≥4条 → 冷却 × tier1_factor
+  tier1_window: 60
+  tier1_factor: 1.5
+  tier2_count: 10         # 5分钟内 ≥15条 → 冷却 × tier2_factor
+  tier2_window: 300
+  tier2_factor: 2
+  cap_count: 15           # 10分钟内 ≥20条 → 硬上限（停止回复）
+  cap_window: 600
+
+# --- 消息聚合 ---
+# 决定 bot 收到新消息后等多久/等多少条再触发 AI
+aggregation:
+  window_timeout: 8.0      # 聚合窗口: 多久无新消息就停止等待（秒）
+  max_messages: 8           # 聚合窗口: 攒够多少条直接跳过等待
+
+# --- AI 回复 ---
+ai_reply:
+  enabled: true             # 是否启用 AI 回复（false 时只记录聊天不回复）
+
+# --- 黑名单 ---
+blacklist:
+  groups: []  # 不处理消息的群号列表
+
+# --- 群成员缓存 ---
+group:
+  member_cache_ttl: 600  # 刷新间隔（秒）

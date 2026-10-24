@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "bilibili-mcp": {
+      "command": "python",
+      "args": ["tools/bilibili-mcp/mcp_server.py"]
+    }
+  }
+}
